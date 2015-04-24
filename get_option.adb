@@ -1,5 +1,4 @@
 with Ada.Text_IO;
-with Ada.Strings.Unbounded;
 with Ada.Command_Line.Remove;
 with Ada.Characters.Handling;
 
@@ -8,7 +7,6 @@ package body Get_Option is
 
    type Option_Type is record
       Short_Name : Character;
-      Long_Name  : Strings.Unbounded.Unbounded_String;
       Activated  : Boolean := False; -- set_option has been called
    end record;
 
@@ -20,21 +18,26 @@ package body Get_Option is
    end;
    pragma Inline(Pl_Error);
 
+   function Long_Name(Opt: Option_Title) return String is
+      use Ada.Characters.Handling;
+   begin
+      return To_Lower(Option_Title'Image(Opt));
+   end Long_Name;
+
    procedure Set_Option(Title      : in Option_Title;
-			Short_Name : in Character;
-			Long_Name  : in String) is
-      use Ada.Text_IO, Ada.Strings.Unbounded;
+			Short_Name : in Character) is
+      use Ada.Text_IO;
    begin
       if Option(Title).Activated then
 	 Pl_Error("Option" & Option_Title'Image(Title) & " already present");
 	 return;
       end if;
 
-      Option(Title) := (Short_Name, To_Unbounded_String(Long_Name), True);
+      Option(Title) := (Short_Name, True);
    end Set_Option;
 
    function Get_Options return Options_Result_Array is
-      use Ada.Command_Line, Ada.Strings.Unbounded, Ada.Characters.Handling;
+      use Ada.Command_Line;
       Lg: Natural;
       Result: Options_Result_Array;
       Found: Boolean;
@@ -48,7 +51,7 @@ package body Get_Option is
 	    elsif Argument(Num)(2) = '-' then
 	       Found := False;
 	       for N in Option'Range loop
-		  if To_String(Option(N).Long_Name) = Argument(Num)(3..Lg) then
+		  if Long_Name(N) = Argument(Num)(3..Lg) then
 		     Result(N).Set := True;
 		     Found := True;
 		  end if;

@@ -15,8 +15,7 @@ package Get_Option is
    type Options_Result_Array is array (Option_Title) of Option_Result;
 
    procedure Set_Option(title      : in Option_Title;
-			Short_Name : in Character;
-			Long_Name  : in String);
+			Short_Name : in Character);
 
    function Get_Options return Options_Result_Array;
 
