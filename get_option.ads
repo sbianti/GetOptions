@@ -14,8 +14,15 @@ package Get_Option is
 
    type Option_Result_Array is array (Option_Title) of Option_Result;
 
-   procedure Set_Option(title      : in Option_Title;
-			Short_Name : in Character);
+   type Value_Presence is (Needed, Optional, No);
+   type Option_Setting is record
+      Short_Name: Character;
+      Value: Value_Presence;
+   end record;
+
+   type Option_Setting_Array is array (Option_Title) of Option_Setting;
+
+   procedure Set_Options(Option_Settings: in Option_Setting_Array);
 
    function Get_Options return Option_Result_Array;
 

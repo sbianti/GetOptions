@@ -5,12 +5,7 @@ with Ada.Characters.Handling;
 package body Get_Option is
    use Ada.Text_IO;
 
-   type Option_Type is record
-      Short_Name : Character;
-      Activated  : Boolean := False; -- set_option has been called
-   end record;
-
-   Option: array (Option_Title) of Option_Type;
+   Option: Option_Setting_Array;
 
    procedure Pl_Error(Item: String) is
    begin
@@ -24,17 +19,11 @@ package body Get_Option is
       return To_Lower(Option_Title'Image(Opt));
    end Long_Name;
 
-   procedure Set_Option(Title      : in Option_Title;
-			Short_Name : in Character) is
+   procedure Set_Options(Option_Settings: in Option_Setting_Array) is
       use Ada.Text_IO;
    begin
-      if Option(Title).Activated then
-	 Pl_Error("Option" & Option_Title'Image(Title) & " already present");
-	 return;
-      end if;
-
-      Option(Title) := (Short_Name, True);
-   end Set_Option;
+      Option := Option_Settings;
+   end Set_Options;
 
    function Get_Options return Option_Result_Array is
       use Ada.Command_Line;
