@@ -36,10 +36,10 @@ package body Get_Option is
       Option(Title) := (Short_Name, True);
    end Set_Option;
 
-   function Get_Options return Options_Result_Array is
+   function Get_Options return Option_Result_Array is
       use Ada.Command_Line;
       Lg: Natural;
-      Result: Options_Result_Array;
+      Result: Option_Result_Array;
       Found: Boolean;
    begin
       for Num in reverse 1..Argument_Count loop

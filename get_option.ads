@@ -12,11 +12,11 @@ package Get_Option is
       Value: access String;
    end record;
 
-   type Options_Result_Array is array (Option_Title) of Option_Result;
+   type Option_Result_Array is array (Option_Title) of Option_Result;
 
    procedure Set_Option(title      : in Option_Title;
 			Short_Name : in Character);
 
-   function Get_Options return Options_Result_Array;
+   function Get_Options return Option_Result_Array;
 
 end Get_Option;
