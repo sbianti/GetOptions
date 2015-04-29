@@ -14,10 +14,10 @@ package Get_Option is
 
    type Option_Result_Array is array (Option_Title) of Option_Result;
 
-   type Value_Presence is (Needed, Optional, No);
+   type Value_Presence is (Yes, Optional, No);
    type Option_Setting is record
       Short_Name: Character;
-      Value: Value_Presence;
+      Needs_Value: Value_Presence;
    end record;
 
    type Option_Setting_Array is array (Option_Title) of Option_Setting;
@@ -26,4 +26,5 @@ package Get_Option is
 
    function Get_Options return Option_Result_Array;
 
+   Parsing_Error: exception;
 end Get_Option;
