@@ -88,6 +88,10 @@ package body Get_Option is
 		     if Option(Title).Short_Name = Argument(Num)(I) then
 			Found := True;
 			if Option(Title).Needs_Value /= No then
+			   if I > 2 then
+			      Pl_Error("Short option that could take a value should not be grouped");
+			      raise Bad_Grouped_Option_Error;
+			   end if;
 			   Check_Parameter_Value(Title, Num, Value);
 			   if Value /= Null_Unbounded_String then
 			      Access_Value := new String(1..Length(Value));

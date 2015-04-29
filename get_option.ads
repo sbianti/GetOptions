@@ -26,5 +26,5 @@ package Get_Option is
 
    function Get_Options return Option_Result_Array;
 
-   Parsing_Error: exception;
+   Parsing_Error, Bad_Grouped_Option_Error: exception;
 end Get_Option;
