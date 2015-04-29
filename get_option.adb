@@ -12,7 +12,7 @@ package body Get_Option is
 
    procedure Pl_Error(Item: String) is
    begin
-      Put_Line(Standard_Error, Item);
+      Put_Line(Standard_Error, "Parsing error: " & Item);
    end;
    pragma Inline(Pl_Error);
 
@@ -41,8 +41,7 @@ package body Get_Option is
       begin
 	 if Argument_Count = Count or else Argument(Count + 1)(1) = '-' then
 	    if Option(Title).Needs_Value = Yes then
-	       Pl_Error("Error: Option " &
-			  Long_Name(Title) & " requires an argument");
+	       Pl_Error("Option " & Long_Name(Title) & " requires an argument");
 	       raise Parsing_Error;
 	    end if;
 	    Value := Null_Unbounded_String;
