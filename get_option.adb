@@ -83,6 +83,7 @@ package body Get_Option is
 	       end if;
 	    else
 	       -- option(s) courte(s)
+	       Short_Option_Loop:
 	       for I in 2..Lg loop
 		  for Title in Option'Range loop
 		     if Option(Title).Short_Name = Argument(Num)(I) then
@@ -91,14 +92,20 @@ package body Get_Option is
 			   if I > 2 then
 			      Pl_Error("Short option that could take a value should not be grouped");
 			      raise Bad_Grouped_Option_Error;
-			   end if;
-			   Check_Parameter_Value(Title, Num, Value);
-			   if Value /= Null_Unbounded_String then
-			      Access_Value := new String(1..Length(Value));
-			      Access_Value.all := To_String(Value);
-			      Remove.Remove_Argument(Num + 1);
+			   elsif I /= Lg then
+			      Access_Value :=
+				new String'(Argument(Num)(I+1..lg));
+			      Result(Title) := (True, Access_Value);
+			      exit Short_Option_Loop;
 			   else
-			      Access_Value := null;
+			      Check_Parameter_Value(Title, Num, Value);
+			      if Value /= Null_Unbounded_String then
+				 Access_Value := new String(1..Length(Value));
+				 Access_Value.all := To_String(Value);
+				 Remove.Remove_Argument(Num + 1);
+			      else
+				 Access_Value := null;
+			      end if;
 			   end if;
 			else
 			   Access_Value := null;
@@ -113,7 +120,7 @@ package body Get_Option is
 		  else
 		     Found := False;
 		  end if;
-	       end loop;
+	       end loop Short_Option_Loop;
 	    end if;
 	    Remove.Remove_Argument(Num);
 	 end if;
