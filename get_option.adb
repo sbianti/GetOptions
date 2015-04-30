@@ -121,10 +121,14 @@ package body Get_Option is
 		  end if;
 	       end loop Short_Option_Loop;
 	    end if;
-	    Remove.Remove_Argument(Num);
 	 end if;
       end loop;
 
+      for N in reverse 1..Argument_Count loop
+	 if Argument(N)(1) = '-' then
+	    Remove.Remove_Argument(N);
+	 end if;
+      end loop;
       return Result;
    end Get_Options;
 end Get_Option;
