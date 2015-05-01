@@ -12,8 +12,6 @@ package body Get_Option is
    Already_Warned_For_Multiple_Set: array (Option_Title) of Boolean :=
      (others => False);
 
-   type Access_String is access String;
-
    procedure Pl_Error(Item: String) is
    begin
       Put_Line(Standard_Error, "Parsing error: " & Item);
@@ -37,7 +35,7 @@ package body Get_Option is
       Result: Option_Result_Array;
       Found: Boolean;
       Value: Unbounded_String;
-      Access_Value: Access_String;
+      Access_Value: String_Access;
 
       procedure Check_Parameter_Value(Title: in Option_Title;
 				      Count: in Natural;
