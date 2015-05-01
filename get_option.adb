@@ -1,10 +1,11 @@
 with Ada.Text_IO;
 with Ada.Command_Line.Remove;
 with Ada.Characters.Handling;
+with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
 
 package body Get_Option is
-   use Ada.Text_IO, Ada.Command_Line, Ada.Strings.Unbounded;
+   use Ada.Text_IO, Ada.Command_Line, Ada.Strings.Unbounded, Ada.Strings.Fixed;
 
    Option: Option_Setting_Array;
 
@@ -67,6 +68,8 @@ package body Get_Option is
 
 	 return True;
       end Already_Set;
+
+      Pos_Equal, Stop: Natural;
    begin
       for Num in reverse 1..Argument_Count loop
 	 Lg := Argument(Num)'Length;
@@ -77,23 +80,39 @@ package body Get_Option is
 	    elsif Argument(Num)(2) = '-' then
 	       Found := False;
 	       for Title in Option'Range loop
-		  if Long_Name(Title) = Argument(Num)(3..Lg) then
+		  Pos_Equal := Index(Argument(Num), "=", 3);
+		  if Pos_Equal = 0 then
+		     Stop := Lg;
+		  else
+		     Stop := Pos_Equal - 1;
+		  end if;
+
+		  if Long_Name(Title) = Argument(Num)(3..Stop) then
 		     if Already_Set(Title) then
 			Found := True;
 			exit;
 		     end if;
 
 		     if Option(Title).Needs_Value /= No then
-			Check_Parameter_Value(Title, Num, Value);
-			if Value /= Null_Unbounded_String then
-			   Access_Value := new String(1..Length(Value));
-			   Access_Value.all := To_String(Value);
-			   Remove.Remove_Argument(Num + 1);
+			if Pos_Equal /= 0 then
+			   Access_Value :=
+			     new String'(Argument(Num)(Pos_Equal+1..Lg));
 			else
-			   Access_Value := null;
+			   Check_Parameter_Value(Title, Num, Value);
+			   if Value /= Null_Unbounded_String then
+			      Access_Value := new String(1..Length(Value));
+			      Access_Value.all := To_String(Value);
+			      Remove.Remove_Argument(Num + 1);
+			   else
+			      Access_Value := null;
+			   end if;
 			end if;
 		     else
 			Access_Value := null;
+			if Pos_Equal /= 0 then
+			   Pl_Error("Option " & Long_Name(Title) &
+				      " doesn't take a value");
+			end if;
 		     end if;
 		     Result(Title) := (Set => True, Value => Access_Value);
 		     Found := True;
