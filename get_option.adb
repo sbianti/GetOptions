@@ -8,6 +8,9 @@ package body Get_Option is
 
    Option: Option_Setting_Array;
 
+   Already_Warned_For_Multiple_Set: array (Option_Title) of Boolean :=
+     (others => False);
+
    type Access_String is access String;
 
    procedure Pl_Error(Item: String) is
@@ -49,6 +52,21 @@ package body Get_Option is
 	    Value := To_Unbounded_String(Argument(Count + 1));
 	 end if;
       end Check_Parameter_Value;
+
+      function Already_Set(Title: Option_Title) return Boolean is
+      begin
+	 if not Result(Title).Set then
+	    return False;
+	 end if;
+
+	 if not Already_Warned_For_Multiple_Set(Title) then
+	    Pl_Error("Option " & Option_Title'Image(Title) &
+		       " set multiple times");
+	    Already_Warned_For_Multiple_Set(Title) := True;
+	 end if;
+
+	 return True;
+      end Already_Set;
    begin
       for Num in reverse 1..Argument_Count loop
 	 Lg := Argument(Num)'Length;
@@ -60,6 +78,10 @@ package body Get_Option is
 	       Found := False;
 	       for Title in Option'Range loop
 		  if Long_Name(Title) = Argument(Num)(3..Lg) then
+		     if Already_Set(Title) then
+			exit;
+		     end if;
+
 		     if Option(Title).Needs_Value /= No then
 			Check_Parameter_Value(Title, Num, Value);
 			if Value /= Null_Unbounded_String then
@@ -86,6 +108,10 @@ package body Get_Option is
 	       for I in 2..Lg loop
 		  for Title in Option'Range loop
 		     if Option(Title).Short_Name = Argument(Num)(I) then
+			if Already_Set(Title) then
+			   exit;
+			end if;
+
 			Found := True;
 			if Option(Title).Needs_Value /= No then
 			   if I > 2 then
@@ -109,11 +135,14 @@ package body Get_Option is
 			else
 			   Access_Value := null;
 			end if;
+
 			Result(Title).Set := True;
 			Result(Title).Value := Access_Value;
+
 			exit;
 		     end if;
 		  end loop;
+
 		  if not Found then
 		     Pl_Error("Unknown option: «-" & Argument(Num)(I) & "»");
 		  else
