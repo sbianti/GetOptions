@@ -7,8 +7,6 @@ with Ada.Strings.Unbounded;
 package body Get_Option is
    use Ada.Text_IO, Ada.Command_Line, Ada.Strings.Unbounded, Ada.Strings.Fixed;
 
-   Option: Option_Setting_Array;
-
    Already_Warned_For_Multiple_Set: array (Option_Title) of Boolean :=
      (others => False);
 
@@ -24,13 +22,8 @@ package body Get_Option is
       return To_Lower(Option_Title'Image(Opt));
    end Long_Name;
 
-   procedure Set_Options(Option_Settings: in Option_Setting_Array) is
-      use Ada.Text_IO;
-   begin
-      Option := Option_Settings;
-   end Set_Options;
-
-   function Get_Options return Option_Result_Array is
+   function Get_Options(Option: in Option_Setting_Array)
+		       return Option_Result_Array is
       Lg: Natural;
       Result: Option_Result_Array;
       Found: Boolean;

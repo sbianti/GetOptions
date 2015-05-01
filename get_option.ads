@@ -22,9 +22,8 @@ package Get_Option is
 
    type Option_Setting_Array is array (Option_Title) of Option_Setting;
 
-   procedure Set_Options(Option_Settings: in Option_Setting_Array);
-
-   function Get_Options return Option_Result_Array;
+   function Get_Options(Option: in Option_Setting_Array)
+		       return Option_Result_Array;
 
    Parsing_Error, Bad_Grouped_Option_Error: exception;
 end Get_Option;
