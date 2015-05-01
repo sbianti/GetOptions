@@ -21,6 +21,7 @@ package body Get_Option is
    begin
       return To_Lower(Option_Title'Image(Opt));
    end Long_Name;
+   pragma Inline(Long_Name);
 
    function Get_Options(Option: in Option_Setting_Array)
 		       return Option_Result_Array is
@@ -45,7 +46,7 @@ package body Get_Option is
 	 end if;
       end Check_Parameter_Value;
 
-      function Already_Set(Title: Option_Title) return Boolean is
+      function Is_Already_Set(Title: Option_Title) return Boolean is
       begin
 	 if not Result(Title).Set then
 	    return False;
@@ -58,19 +59,22 @@ package body Get_Option is
 	 end if;
 
 	 return True;
-      end Already_Set;
+      end Is_Already_Set;
 
       Pos_Equal, Stop: Natural;
    begin
       for Num in reverse 1..Argument_Count loop
 	 Lg := Argument(Num)'Length;
+
 	 if Argument(Num)(1) = '-' then
 	    if Lg = 1 or (Lg = 2 and Argument(Num)(2) = '-') then
 	       -- fin des options TODO
 	       null;
 	    elsif Argument(Num)(2) = '-' then
 	       Found := False;
+
 	       for Title in Option'Range loop
+
 		  Pos_Equal := Index(Argument(Num), "=", 3);
 		  if Pos_Equal = 0 then
 		     Stop := Lg;
@@ -79,8 +83,9 @@ package body Get_Option is
 		  end if;
 
 		  if Long_Name(Title) = Argument(Num)(3..Stop) then
-		     if Already_Set(Title) then
-			Found := True;
+		     Found := True;
+
+		     if Is_Already_Set(Title) then
 			exit;
 		     end if;
 
@@ -90,6 +95,7 @@ package body Get_Option is
 			     new String'(Argument(Num)(Pos_Equal+1..Lg));
 			else
 			   Check_Parameter_Value(Title, Num, Value);
+
 			   if Value /= Null_Unbounded_String then
 			      Access_Value := new String(1..Length(Value));
 			      Access_Value.all := To_String(Value);
@@ -100,13 +106,14 @@ package body Get_Option is
 			end if;
 		     else
 			Access_Value := null;
+
 			if Pos_Equal /= 0 then
 			   Pl_Error("Option " & Long_Name(Title) &
 				      " doesn't take a value");
 			end if;
 		     end if;
+
 		     Result(Title) := (Set => True, Value => Access_Value);
-		     Found := True;
 		  end if;
 	       end loop;
 
@@ -121,7 +128,7 @@ package body Get_Option is
 
 		  for Title in Option'Range loop
 		     if Option(Title).Short_Name = Argument(Num)(I) then
-			if Already_Set(Title) then
+			if Is_Already_Set(Title) then
 			   Found := True;
 			   exit;
 			end if;
@@ -170,6 +177,8 @@ package body Get_Option is
 	    Remove.Remove_Argument(N);
 	 end if;
       end loop;
+
       return Result;
    end Get_Options;
+
 end Get_Option;
