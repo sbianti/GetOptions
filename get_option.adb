@@ -79,6 +79,7 @@ package body Get_Option is
 	       for Title in Option'Range loop
 		  if Long_Name(Title) = Argument(Num)(3..Lg) then
 		     if Already_Set(Title) then
+			Found := True;
 			exit;
 		     end if;
 
@@ -104,11 +105,14 @@ package body Get_Option is
 	       end if;
 	    else
 	       -- option(s) courte(s)
-	       Short_Option_Loop:
+	   Short_Option_Loop:
 	       for I in 2..Lg loop
+		  Found := False;
+
 		  for Title in Option'Range loop
 		     if Option(Title).Short_Name = Argument(Num)(I) then
 			if Already_Set(Title) then
+			   Found := True;
 			   exit;
 			end if;
 
@@ -145,8 +149,6 @@ package body Get_Option is
 
 		  if not Found then
 		     Pl_Error("Unknown option: «-" & Argument(Num)(I) & "»");
-		  else
-		     Found := False;
 		  end if;
 	       end loop Short_Option_Loop;
 	    end if;
