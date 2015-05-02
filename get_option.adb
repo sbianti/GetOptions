@@ -74,35 +74,87 @@ package body Get_Option is
       for Num in reverse 1..End_Of_The_Options loop
 	 Lg := Argument(Num)'Length;
 
-	 if Argument(Num)(1) = '-' then
-	    if Lg = 1 then
-	       null;
-	    elsif Argument(Num)(2) = '-' then
+	 if Argument(Num)(1) /= '-' then
+	    goto Continue;
+	 end if;
+
+	 if Lg = 1 then
+	    null;
+	 elsif Argument(Num)(2) = '-' then
+	    Found := False;
+
+	    for Title in Option'Range loop
+
+	       Pos_Equal := Index(Argument(Num), "=", 3);
+	       if Pos_Equal = 0 then
+		  Stop := Lg;
+	       else
+		  Stop := Pos_Equal - 1;
+	       end if;
+
+	       if Long_Name(Title) = Argument(Num)(3..Stop) then
+		  Found := True;
+
+		  if Is_Already_Set(Title) then
+		     exit;
+		  end if;
+
+		  if Option(Title).Needs_Value /= No then
+		     if Pos_Equal /= 0 then
+			Access_Value :=
+			  new String'(Argument(Num)(Pos_Equal+1..Lg));
+		     else
+			Check_Parameter_Value(Title, Num, Value);
+
+			if Value /= Null_Unbounded_String then
+			   Access_Value := new String(1..Length(Value));
+			   Access_Value.all := To_String(Value);
+			   Remove.Remove_Argument(Num + 1);
+			else
+			   Access_Value := null;
+			end if;
+		     end if;
+		  else
+		     Access_Value := null;
+
+		     if Pos_Equal /= 0 then
+			Pl_Error("Option " & Long_Name(Title) &
+				   " doesn't take a value");
+		     end if;
+		  end if;
+
+		  Result(Title) := (Set => True, Value => Access_Value);
+	       end if;
+	    end loop;
+
+	    if not Found then
+	       Pl_Error("Unknown option: «" & Argument(Num)(3..Lg) & "»");
+	    end if;
+	 else
+	    -- option(s) courte(s)
+	Short_Option_Loop:
+	    for I in 2..Lg loop
 	       Found := False;
 
 	       for Title in Option'Range loop
-
-		  Pos_Equal := Index(Argument(Num), "=", 3);
-		  if Pos_Equal = 0 then
-		     Stop := Lg;
-		  else
-		     Stop := Pos_Equal - 1;
-		  end if;
-
-		  if Long_Name(Title) = Argument(Num)(3..Stop) then
-		     Found := True;
-
+		  if Option(Title).Short_Name = Argument(Num)(I) then
 		     if Is_Already_Set(Title) then
+			Found := True;
 			exit;
 		     end if;
 
+		     Found := True;
 		     if Option(Title).Needs_Value /= No then
-			if Pos_Equal /= 0 then
+			if I > 2 then
+			   Pl_Error("Short option that could take a value should not be grouped");
+			   raise Bad_Grouped_Option_Error;
+			elsif I /= Lg then
 			   Access_Value :=
-			     new String'(Argument(Num)(Pos_Equal+1..Lg));
+			     new String'(Argument(Num)(I+1..lg));
+			   Result(Title) := (True, Access_Value);
+			   exit Short_Option_Loop;
 			else
 			   Check_Parameter_Value(Title, Num, Value);
-
 			   if Value /= Null_Unbounded_String then
 			      Access_Value := new String(1..Length(Value));
 			      Access_Value.all := To_String(Value);
@@ -113,70 +165,22 @@ package body Get_Option is
 			end if;
 		     else
 			Access_Value := null;
-
-			if Pos_Equal /= 0 then
-			   Pl_Error("Option " & Long_Name(Title) &
-				      " doesn't take a value");
-			end if;
 		     end if;
 
-		     Result(Title) := (Set => True, Value => Access_Value);
+		     Result(Title).Set := True;
+		     Result(Title).Value := Access_Value;
+
+		     exit;
 		  end if;
 	       end loop;
 
 	       if not Found then
-		  Pl_Error("Unknown option: «" & Argument(Num)(3..Lg) & "»");
+		  Pl_Error("Unknown option: «-" & Argument(Num)(I) & "»");
 	       end if;
-	    else
-	       -- option(s) courte(s)
-	   Short_Option_Loop:
-	       for I in 2..Lg loop
-		  Found := False;
-
-		  for Title in Option'Range loop
-		     if Option(Title).Short_Name = Argument(Num)(I) then
-			if Is_Already_Set(Title) then
-			   Found := True;
-			   exit;
-			end if;
-
-			Found := True;
-			if Option(Title).Needs_Value /= No then
-			   if I > 2 then
-			      Pl_Error("Short option that could take a value should not be grouped");
-			      raise Bad_Grouped_Option_Error;
-			   elsif I /= Lg then
-			      Access_Value :=
-				new String'(Argument(Num)(I+1..lg));
-			      Result(Title) := (True, Access_Value);
-			      exit Short_Option_Loop;
-			   else
-			      Check_Parameter_Value(Title, Num, Value);
-			      if Value /= Null_Unbounded_String then
-				 Access_Value := new String(1..Length(Value));
-				 Access_Value.all := To_String(Value);
-				 Remove.Remove_Argument(Num + 1);
-			      else
-				 Access_Value := null;
-			      end if;
-			   end if;
-			else
-			   Access_Value := null;
-			end if;
-
-			Result(Title).Set := True;
-			Result(Title).Value := Access_Value;
-
-			exit;
-		     end if;
-		  end loop;
-
-		  if not Found then
-		     Pl_Error("Unknown option: «-" & Argument(Num)(I) & "»");
-		  end if;
-	       end loop Short_Option_Loop;
-	    end if;
+	    end loop Short_Option_Loop;
 	 end if;
+
+     <<Continue>> null;
       end loop;
 
       if End_Of_The_Options /= Argument_Count then
