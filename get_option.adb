@@ -175,6 +175,7 @@ package body Get_Option is
 			   Access_Value := new String(1..Length(Value));
 			   Access_Value.all := To_String(Value);
 			   Remove.Remove_Argument(Num + 1);
+			   End_Of_The_Options := End_Of_The_Options - 1;
 			else
 			   Access_Value := null;
 			end if;
@@ -223,6 +224,7 @@ package body Get_Option is
 			      Access_Value := new String(1..Length(Value));
 			      Access_Value.all := To_String(Value);
 			      Remove.Remove_Argument(Num + 1);
+			      End_Of_The_Options := End_Of_The_Options - 1;
 			   else
 			      Access_Value := null;
 			   end if;
