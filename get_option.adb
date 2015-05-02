@@ -2,7 +2,6 @@ with Ada.Text_IO;
 with Ada.Command_Line.Remove;
 with Ada.Characters.Handling;
 with Ada.Strings.Fixed;
-with Ada.Strings.Unbounded;
 
 package body Get_Option is
    use Ada.Text_IO, Ada.Command_Line, Ada.Strings.Unbounded, Ada.Strings.Fixed;
@@ -23,7 +22,8 @@ package body Get_Option is
    end Long_Name;
    pragma Inline(Long_Name);
 
-   function Get_Options(Option: in Option_Setting_Array)
+   function Get_Options(Option: in Option_Setting_Array;
+		       Help_Header, Help_Footer: in String)
 		       return Option_Result_Array is
       Lg: Natural;
       Result: Option_Result_Array;
@@ -61,15 +61,67 @@ package body Get_Option is
 	 return True;
       end Is_Already_Set;
 
+      function Short_Explanation(Item: in Option_Setting) return String is
+      begin
+	 return To_String(Item.Short_Explanation);
+      end Short_Explanation;
+      pragma Inline(Short_Explanation);
+
+      function Value_Form(Item: in Option_Setting) return String is
+      begin
+	 return To_String(Item.Value_Form);
+      end Value_Form;
+      pragma Inline(Value_Form);
+
+      procedure Print_Help is
+	 -- Help is printed like this:
+	 -- -j, --number-of-thread=???  Runs the number of thread specified.
+	 Max_Width: Ada.Text_Io.Count := Option_Title'Width + 12;
+      begin
+	 Put_Line(Help_Header);
+	 New_Line;
+
+	 for Title in Option_Title'Range loop
+	    if Option(Title).Short_Name = Null_Short_Name then
+	       Put("-" & ",  --");
+	    else
+	       Put("-" & Option(Title).Short_Name & ", --");
+	    end if;
+
+	    Put(Long_Name(Title));
+
+	    case Option(Title).Needs_Value is
+	       when Yes =>
+		  Put("=" & Value_Form(Option(Title)) & ' ');
+	       when Optional =>
+		  Put("[=" & Value_Form(Option(Title)) & "] ");
+	       when No => null;
+	    end case;
+
+	    Set_Col(Max_Width);
+	    Put_Line(Short_Explanation(Option(Title)));
+	 end loop;
+
+	 New_Line;
+	 Put_Line(Help_Footer);
+      end Print_Help;
+
       Pos_Equal, Stop: Natural;
       End_Of_The_Options: Natural := Argument_Count;
+      Help_Called: Boolean := False;
    begin
-      for Num in 1..Argument_Count loop
+      for Num in reverse 1..Argument_Count loop
 	 if Argument(Num) = "--" then
 	    End_Of_The_Options := Num - 1;
-	    exit;
+	 elsif Argument(Num) = "--help" or Argument(Num) = "-h" then
+	    Help_Called := True;
 	 end if;
       end loop;
+
+      if Help_Called then
+	 Print_Help;
+	 raise End_Of_Program_With_Help_Menu;
+      end if;
 
       for Num in reverse 1..End_Of_The_Options loop
 	 if Argument(Num)(1) /= '-' then
@@ -145,7 +197,6 @@ package body Get_Option is
 	       Pl_Error("Unknown option: «" & Argument(Num)(3..Lg) & "»");
 	    end if;
 	 else
-	    -- option(s) courte(s)
 	Short_Option_Loop:
 	    for I in 2..Lg loop
 	       for Title in Option'Range loop
