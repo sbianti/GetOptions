@@ -62,13 +62,20 @@ package body Get_Option is
       end Is_Already_Set;
 
       Pos_Equal, Stop: Natural;
+      End_Of_The_Options: Natural := Argument_Count;
    begin
-      for Num in reverse 1..Argument_Count loop
+      for Num in 1..Argument_Count loop
+	 if Argument(Num) = "--" then
+	    End_Of_The_Options := Num - 1;
+	    exit;
+	 end if;
+      end loop;
+
+      for Num in reverse 1..End_Of_The_Options loop
 	 Lg := Argument(Num)'Length;
 
 	 if Argument(Num)(1) = '-' then
-	    if Lg = 1 or (Lg = 2 and Argument(Num)(2) = '-') then
-	       -- fin des options TODO
+	    if Lg = 1 then
 	       null;
 	    elsif Argument(Num)(2) = '-' then
 	       Found := False;
@@ -172,7 +179,11 @@ package body Get_Option is
 	 end if;
       end loop;
 
-      for N in reverse 1..Argument_Count loop
+      if End_Of_The_Options /= Argument_Count then
+	 Remove.Remove_Argument(End_Of_The_Options + 1);
+      end if;
+
+      for N in reverse 1..End_Of_The_Options loop
 	 if Argument(N)(1) = '-' then
 	    Remove.Remove_Argument(N);
 	 end if;
