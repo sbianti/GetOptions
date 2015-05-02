@@ -72,25 +72,25 @@ package body Get_Option is
       end loop;
 
       for Num in reverse 1..End_Of_The_Options loop
-	 Lg := Argument(Num)'Length;
-
 	 if Argument(Num)(1) /= '-' then
 	    goto Continue;
 	 end if;
+
+	 Lg := Argument(Num)'Length;
 
 	 if Lg = 1 then
 	    null;
 	 elsif Argument(Num)(2) = '-' then
 	    Found := False;
 
-	    for Title in Option'Range loop
+	    Pos_Equal := Index(Argument(Num), "=", 3);
+	    if Pos_Equal = 0 then
+	       Stop := Lg;
+	    else
+	       Stop := Pos_Equal - 1;
+	    end if;
 
-	       Pos_Equal := Index(Argument(Num), "=", 3);
-	       if Pos_Equal = 0 then
-		  Stop := Lg;
-	       else
-		  Stop := Pos_Equal - 1;
-	       end if;
+	    for Title in Option'Range loop
 
 	       if Long_Name(Title) = Argument(Num)(3..Stop) then
 		  Found := True;
@@ -124,6 +124,7 @@ package body Get_Option is
 		  end if;
 
 		  Result(Title) := (Set => True, Value => Access_Value);
+		  exit;
 	       end if;
 	    end loop;
 
@@ -138,12 +139,12 @@ package body Get_Option is
 
 	       for Title in Option'Range loop
 		  if Option(Title).Short_Name = Argument(Num)(I) then
+		     Found := True;
+
 		     if Is_Already_Set(Title) then
-			Found := True;
 			exit;
 		     end if;
 
-		     Found := True;
 		     if Option(Title).Needs_Value /= No then
 			if I > 2 then
 			   Pl_Error("Short option that could take a value should not be grouped");
@@ -155,6 +156,7 @@ package body Get_Option is
 			   exit Short_Option_Loop;
 			else
 			   Check_Parameter_Value(Title, Num, Value);
+
 			   if Value /= Null_Unbounded_String then
 			      Access_Value := new String(1..Length(Value));
 			      Access_Value.all := To_String(Value);
@@ -167,9 +169,7 @@ package body Get_Option is
 			Access_Value := null;
 		     end if;
 
-		     Result(Title).Set := True;
-		     Result(Title).Value := Access_Value;
-
+		     Result(Title) := (Set => True, Value => Access_Value);
 		     exit;
 		  end if;
 	       end loop;
