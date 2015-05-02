@@ -5,7 +5,7 @@ generic
 package Get_Option is
    use Ada;
 
-   Nul_Short_Name : constant Character := Characters.Latin_1.Nul;
+   Null_Short_Name : constant Character := Characters.Latin_1.Nul;
 
    type Option_Result is record
       Set: Boolean := False;

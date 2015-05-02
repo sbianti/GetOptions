@@ -77,12 +77,25 @@ package body Get_Option is
 	 end if;
 
 	 Lg := Argument(Num)'Length;
+	 Found := False;
 
 	 if Lg = 1 then
-	    null;
-	 elsif Argument(Num)(2) = '-' then
-	    Found := False;
+	    for Title in Option'Range loop
+	       if Option(Title).Short_Name = Null_Short_Name then
+		  if not Is_Already_Set(Title) then
+		     Result(Title) := (True, null);
+		  end if;
 
+		  Found := True;
+
+		  exit;
+	       end if;
+	    end loop;
+
+	    if not Found then
+	       Pl_Error("special void option «-» is not recognized");
+	    end if;
+	 elsif Argument(Num)(2) = '-' then
 	    Pos_Equal := Index(Argument(Num), "=", 3);
 	    if Pos_Equal = 0 then
 	       Stop := Lg;
@@ -135,8 +148,6 @@ package body Get_Option is
 	    -- option(s) courte(s)
 	Short_Option_Loop:
 	    for I in 2..Lg loop
-	       Found := False;
-
 	       for Title in Option'Range loop
 		  if Option(Title).Short_Name = Argument(Num)(I) then
 		     Found := True;
@@ -176,6 +187,8 @@ package body Get_Option is
 
 	       if not Found then
 		  Pl_Error("Unknown option: «-" & Argument(Num)(I) & "»");
+	       else
+		  Found := False;
 	       end if;
 	    end loop Short_Option_Loop;
 	 end if;
