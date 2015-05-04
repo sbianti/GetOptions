@@ -16,10 +16,10 @@ package Get_Option is
 
    type Option_Result_Array is array (Option_Title) of Option_Result;
 
-   type Value_Presence is (Yes, Optional, No);
+   type Value_Needed_Type is (Yes, Optional, No);
    type Option_Setting is record
       Short_Name: Character;
-      Needs_Value: Value_Presence;
+      Needs_Value: Value_Needed_Type;
 -- These values are needed to print a fancy help menu:
       Value_Form: Unbounded_String; -- an example of value accepted
       Short_Explanation: Unbounded_String;
