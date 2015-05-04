@@ -16,9 +16,6 @@ package Get_Option is
 
    type Option_Result_Array is array (Option_Title) of Option_Result;
 
-   function To_US(Source : in String) return Unbounded_String
-     renames To_Unbounded_String;
-
    type Value_Presence is (Yes, Optional, No);
    type Option_Setting is record
       Short_Name: Character;
@@ -33,6 +30,9 @@ package Get_Option is
    function Get_Options(Option: in Option_Setting_Array;
 			Help_Header, Help_Footer: in String)
 		       return Option_Result_Array;
+
+   function To_US(Source : in String) return Unbounded_String
+     renames To_Unbounded_String;
 
 -- Renamings from Ada.Command_Line:
    function Argument_Count return Natural renames Command_Line.Argument_Count;
