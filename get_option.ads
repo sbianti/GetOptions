@@ -27,8 +27,12 @@ package Get_Option is
 
    type Option_Setting_Array is array (Option_Title) of Option_Setting;
 
+   type Option_Multisetable is array (Option_Title) of Boolean;
+   All_One_Shot: constant Option_Multisetable := (others => False);
+
    function Get_Options(Option: in Option_Setting_Array;
-			Help_Header, Help_Footer: in String)
+			Help_Header, Help_Footer: in String;
+			Multiset: in Option_Multisetable := All_One_Shot)
 		       return Option_Result_Array;
 
    function To_US(Source : in String) return Unbounded_String

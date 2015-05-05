@@ -9,6 +9,8 @@ package body Get_Option is
    Already_Warned_For_Multiple_Set: array (Option_Title) of Boolean :=
      (others => False);
 
+   Multiple_Set_Allowed: Option_Multisetable;
+
    procedure Pl_Error(Item: String) is
    begin
       Put_Line(Standard_Error, "Parsing error: " & Item);
@@ -23,7 +25,8 @@ package body Get_Option is
    pragma Inline(Long_Name);
 
    function Get_Options(Option: in Option_Setting_Array;
-		       Help_Header, Help_Footer: in String)
+			Help_Header, Help_Footer: in String;
+			Multiset: in Option_Multisetable := All_One_Shot)
 		       return Option_Result_Array is
       Lg: Natural;
       Result: Option_Result_Array;
@@ -106,10 +109,29 @@ package body Get_Option is
 	 Put_Line(Help_Footer);
       end Print_Help;
 
+      function Make_Value(Title: in Option_Title;
+			  Value: in Unbounded_String) return String_Access is
+	 Access_Value: String_Access;
+      begin
+	 if Result(Title).Value /= null then
+	    Access_Value := new String(1..Length(Value) +
+					 Result(Title).Value.all'Length + 1);
+	    Access_Value.all := Result(Title).Value.all &
+	      Character'Val(0) & To_String(Value);
+	 else
+	    Access_Value := new String(1..Length(Value));
+	    Access_Value.all := To_String(Value);
+	 end if;
+
+	 return Access_Value;
+      end Make_Value;
+
       Pos_Equal, Stop: Natural;
       End_Of_The_Options: Natural := Argument_Count;
       Help_Called: Boolean := False;
    begin
+      Multiple_Set_Allowed := Multiset;
+
       for Num in reverse 1..Argument_Count loop
 	 if Argument(Num) = "--" then
 	    End_Of_The_Options := Num - 1;
@@ -135,6 +157,7 @@ package body Get_Option is
 	    for Title in Option'Range loop
 	       if Option(Title).Short_Name = Null_Short_Name then
 		  if not Is_Already_Set(Title) then
+		     -- empty short option should not be set multiple times
 		     Result(Title) := (True, null);
 		  end if;
 
@@ -160,7 +183,8 @@ package body Get_Option is
 	       if Long_Name(Title) = Argument(Num)(3..Stop) then
 		  Found := True;
 
-		  if Is_Already_Set(Title) then
+		  if not Multiple_Set_Allowed(Title) and then
+		    Is_Already_Set(Title) then
 		     exit;
 		  end if;
 
@@ -172,8 +196,7 @@ package body Get_Option is
 			Check_Parameter_Value(Title, Num, Value);
 
 			if Value /= Null_Unbounded_String then
-			   Access_Value := new String(1..Length(Value));
-			   Access_Value.all := To_String(Value);
+			   Access_Value := Make_Value(Title, Value);
 			   Remove.Remove_Argument(Num + 1);
 			   End_Of_The_Options := End_Of_The_Options - 1;
 			else
@@ -204,7 +227,8 @@ package body Get_Option is
 		  if Option(Title).Short_Name = Argument(Num)(I) then
 		     Found := True;
 
-		     if Is_Already_Set(Title) then
+		     if not Multiple_Set_Allowed(Title) and then
+		       Is_Already_Set(Title) then
 			exit;
 		     end if;
 
@@ -221,8 +245,7 @@ package body Get_Option is
 			   Check_Parameter_Value(Title, Num, Value);
 
 			   if Value /= Null_Unbounded_String then
-			      Access_Value := new String(1..Length(Value));
-			      Access_Value.all := To_String(Value);
+			      Access_Value := Make_Value(Title, Value);
 			      Remove.Remove_Argument(Num + 1);
 			      End_Of_The_Options := End_Of_The_Options - 1;
 			   else
