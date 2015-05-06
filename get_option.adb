@@ -24,6 +24,72 @@ package body Get_Option is
    end Long_Name;
    pragma Inline(Long_Name);
 
+   function Get_Number_Values(Result: in Option_Result) return Natural is
+      use Ada.Characters.Latin_1;
+      Number: Natural;
+      Value: String := Result.Value.all;
+   begin
+      if Value = "" then
+	 return 0;
+      end if;
+
+      Number := 1;
+
+      for I in Value'Range loop
+	 if Value(I) = Nul then
+	    Number := Number + 1;
+	 end if;
+      end loop;
+	
+      return Number;
+   end Get_Number_Values;
+
+   function Get_Value(Result: in Option_Result;
+		      Number: in Natural) return String is
+      use Ada.Characters.Latin_1;
+      Start, Current: Natural;
+      Value: String := Result.Value.all;
+   begin
+      if Number > Get_Number_Values(Result) then
+	 return "";
+      end if;
+
+      Start := 1;
+      Current := 0;
+      for I in Value'Range loop
+	 if Value(I) = Nul then
+	    Current := Current + 1;
+
+	    if Current = Number then
+	       return Value(Start..I-1);
+	    end if;
+
+	    Start := I + 1;
+	 end if;
+      end loop;
+
+      return Value(Start..Value'Last);
+   end Get_Value;
+
+   function Get_Values(Result: in Option_Result) return US_Array_Type is
+      use Ada.Characters.Latin_1;
+      Values: Us_Array_Type(1..Get_Number_Values(Result));
+      Value: String := Result.Value.all;
+      Number, Start: Natural := 1;
+   begin
+      for I in Value'Range loop
+	 if Value(I) = Nul then
+	    Values(Number) := To_US(Value(Start..I-1));
+	    Start := I + 1;
+	    Number := Number + 1;
+	 end if;
+      end loop;
+
+      Values(Number) := To_US(Value(Start..Value'Last));
+
+      return Values;
+   end Get_Values;
+
    function Get_Options(Option: in Option_Setting_Array;
 			Help_Header, Help_Footer: in String;
 			Multiset: in Option_Multisetable := All_One_Shot)

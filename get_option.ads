@@ -30,13 +30,20 @@ package Get_Option is
    type Option_Multisetable is array (Option_Title) of Boolean;
    All_One_Shot: constant Option_Multisetable := (others => False);
 
+   type US_Array_Type is array (Natural range <>) of Unbounded_String;
+
    function Get_Options(Option: in Option_Setting_Array;
 			Help_Header, Help_Footer: in String;
 			Multiset: in Option_Multisetable := All_One_Shot)
 		       return Option_Result_Array;
 
-   function To_US(Source : in String) return Unbounded_String
+   function Get_Number_Values(Result: in Option_Result) return Natural;
+   function Get_Value(Result: in Option_Result; Number: Natural) return String;
+   function Get_Values(Result: in Option_Result) return US_Array_Type;
+
+   function To_US(Source: in String) return Unbounded_String
      renames To_Unbounded_String;
+   function To_Str(Source: in Unbounded_String) return String renames To_String;
 
 -- Renamings from Ada.Command_Line:
    function Argument_Count return Natural renames Command_Line.Argument_Count;
