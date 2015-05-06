@@ -32,8 +32,16 @@ package Get_Option is
 
    type US_Array_Type is array (Natural range <>) of Unbounded_String;
 
+   type Help_Section_Array is array (Option_Title) of Unbounded_String;
+
    function Get_Options(Option: in Option_Setting_Array;
 			Help_Header, Help_Footer: in String;
+			Multiset: in Option_Multisetable := All_One_Shot)
+		       return Option_Result_Array;
+
+   function Get_Options(Option: in Option_Setting_Array;
+			Help_Header, Help_Footer: in String;
+			Help_Sections: in Help_Section_Array;
 			Multiset: in Option_Multisetable := All_One_Shot)
 		       return Option_Result_Array;
 
@@ -44,6 +52,9 @@ package Get_Option is
    function To_US(Source: in String) return Unbounded_String
      renames To_Unbounded_String;
    function To_Str(Source: in Unbounded_String) return String renames To_String;
+
+   Null_Unbounded_String: Unbounded_String
+     renames Ada.Strings.Unbounded.Null_Unbounded_String;
 
 -- Renamings from Ada.Command_Line:
    function Argument_Count return Natural renames Command_Line.Argument_Count;

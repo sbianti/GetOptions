@@ -11,6 +11,8 @@ package body Get_Option is
 
    Multiple_Set_Allowed: Option_Multisetable;
 
+   Help_Sections: Help_Section_Array;
+
    procedure Pl_Error(Item: String) is
    begin
       Put_Line(Standard_Error, "Parsing error: " & Item);
@@ -92,6 +94,16 @@ package body Get_Option is
 
    function Get_Options(Option: in Option_Setting_Array;
 			Help_Header, Help_Footer: in String;
+			Help_Sections: in Help_Section_Array;
+			Multiset: in Option_Multisetable := All_One_Shot)
+		       return Option_Result_Array is
+   begin
+      Get_Option.Help_Sections := Help_Sections;
+      return Get_Options(Option, Help_Header, Help_Footer, Multiset);
+   end Get_Options;
+
+   function Get_Options(Option: in Option_Setting_Array;
+			Help_Header, Help_Footer: in String;
 			Multiset: in Option_Multisetable := All_One_Shot)
 		       return Option_Result_Array is
       Lg: Natural;
@@ -151,6 +163,12 @@ package body Get_Option is
 	 New_Line;
 
 	 for Title in Option_Title'Range loop
+	    if Help_Sections(Title) /= Null_Unbounded_String then
+	       New_Line;
+	       Put_Line(To_Str(Help_Sections(Title)));
+	       New_Line;
+	    end if; 
+
 	    if Option(Title).Short_Name = Null_Short_Name then
 	       Put("-" & ",  --");
 	    else
