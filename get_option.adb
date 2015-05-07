@@ -115,7 +115,7 @@ package body Get_Option is
    function Get_Options(Option: in Option_Setting_Array;
 			Help_Header, Help_Footer: in String;
 			Help_Sections: in Help_Section_Array;
-			Multiset: in Option_Multisetable := All_One_Shot)
+			Multiset: in Option_Multisetable := (others => False))
 		       return Option_Result_Array is
    begin
       Get_Option.Help_Sections := Help_Sections;
@@ -124,7 +124,7 @@ package body Get_Option is
 
    function Get_Options(Option: in Option_Setting_Array;
 			Help_Header, Help_Footer: in String;
-			Multiset: in Option_Multisetable := All_One_Shot)
+			Multiset: in Option_Multisetable := (others => False))
 		       return Option_Result_Array is
       Lg: Natural;
       Result: Option_Result_Array;
