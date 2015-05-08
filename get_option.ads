@@ -97,5 +97,6 @@ package Get_Option is
 
    Parsing_Error,
    Bad_Grouped_Option_Error,
-   End_Of_Program_With_Help_Menu: exception;
+   End_Of_Program_With_Help_Menu,
+   Redundant_Short_Option_Name_Error: exception;
 end Get_Option;
