@@ -162,11 +162,11 @@ package body Get_Option is
 	 return True;
       end Is_Already_Set;
 
-      function Short_Explanation(Item: in Option_Setting) return String is
+      function Short_Description(Item: in Option_Setting) return String is
       begin
-	 return To_String(Item.Short_Explanation);
-      end Short_Explanation;
-      pragma Inline(Short_Explanation);
+	 return To_String(Item.Short_Description);
+      end Short_Description;
+      pragma Inline(Short_Description);
 
       function Value_Form(Item: in Option_Setting) return String is
       begin
@@ -206,7 +206,7 @@ package body Get_Option is
 	    end case;
 
 	    Set_Col(Max_Width);
-	    Put_Line(Short_Explanation(Option(Title)));
+	    Put_Line(Short_Description(Option(Title)));
 	 end loop;
 
 	 New_Line;

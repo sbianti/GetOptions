@@ -43,7 +43,7 @@ package Get_Option is
 
 -- These values are needed to print a fancy help menu:
       Value_Form: Unbounded_String; -- an example of value accepted
-      Short_Explanation: Unbounded_String;
+      Short_Description: Unbounded_String;
    end record;
 
    type Option_Setting_Array is array (Option_Title) of Option_Setting;
@@ -74,13 +74,13 @@ package Get_Option is
 -- Renamings from Ada.Strings.Unbounded:
    subtype Unbounded_String is Ada.Strings.Unbounded.Unbounded_String;
 
+   Null_Unbounded_String: Unbounded_String
+     renames Ada.Strings.Unbounded.Null_Unbounded_String;
+
    function To_US(Source: in String) return Unbounded_String
      renames To_Unbounded_String;
 
    function To_Str(Source: in Unbounded_String) return String renames To_String;
-
-   Null_Unbounded_String: Unbounded_String
-     renames Ada.Strings.Unbounded.Null_Unbounded_String;
 
 -- Renamings from Ada.Command_Line:
    function Argument_Count return Natural renames Command_Line.Argument_Count;
