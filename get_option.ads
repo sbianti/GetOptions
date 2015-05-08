@@ -72,6 +72,8 @@ package Get_Option is
    function Get_Values(Result: in Option_Result) return US_Array_Type;
 
 -- Renamings from Ada.Strings.Unbounded:
+   subtype Unbounded_String is Ada.Strings.Unbounded.Unbounded_String;
+
    function To_US(Source: in String) return Unbounded_String
      renames To_Unbounded_String;
 
