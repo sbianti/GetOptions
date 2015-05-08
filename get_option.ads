@@ -27,7 +27,11 @@ generic
 package Get_Option is
    use Ada.Characters, Ada.Strings.Unbounded, Ada;
 
+-- Simple dash (often use to mean reading from stdin):
    Null_Short_Name : constant Character := Latin_1.Nul;
+
+-- Only a long name for this option:
+   No_Short_Name   : constant Character := ' ';
 
    type Option_Result is record
       Set: Boolean := False;

@@ -191,6 +191,8 @@ package body Get_Option is
 
 	    if Option(Title).Short_Name = Null_Short_Name then
 	       Put("-" & ",  --");
+	    elsif Option(Title).Short_Name = No_Short_Name then
+	       Put("    --");
 	    else
 	       Put("-" & Option(Title).Short_Name & ", --");
 	    end if;
@@ -235,17 +237,19 @@ package body Get_Option is
 	 I: Natural := 0;
       begin
 	 for Title in Option'Range loop
-	    for J in 1..I loop
-	       if Shorts(J) = Option(Title).Short_Name then
-		  Pl_Error("short option name " &
-			     Character'Image(Option(Title).Short_Name) &
-			     " is present many times");
-		  raise Redundant_Short_Option_Name_Error;
-	       end if;
-	    end loop;
+	    if Option(Title).Short_Name /= No_Short_Name then
+	       for J in 1..I loop
+		  if Shorts(J) = Option(Title).Short_Name then
+		     Pl_Error("short option name " &
+				Character'Image(Option(Title).Short_Name) &
+				" is present many times");
+		     raise Redundant_Short_Option_Name_Error;
+		  end if;
+	       end loop;
 
-	    I := I + 1;
-	    Shorts(I) := Option(Title).Short_Name;
+	       I := I + 1;
+	       Shorts(I) := Option(Title).Short_Name;
+	    end if;
 	 end loop;
       end Check_Options_Validity;
 
