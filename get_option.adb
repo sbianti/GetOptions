@@ -41,8 +41,15 @@ package body Get_Option is
 
    function Long_Name(Opt: Option_Title) return String is
       use Ada.Characters.Handling;
+      Name: String := Option_Title'Image(Opt);
    begin
-      return To_Lower(Option_Title'Image(Opt));
+      -- If a long option which name is a reserved word is needed,
+      -- just suffix it with «_0»:
+      if Name(Name'Length) = '0' and then Name(Name'Length - 1) = '_' then
+	 return To_Lower(Name(1..Name'Length - 2));
+      else
+	 return To_Lower(Name);
+      end if;
    end Long_Name;
    pragma Inline(Long_Name);
 
