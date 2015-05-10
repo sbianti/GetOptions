@@ -156,7 +156,7 @@ package body Get_Option is
 
       function Is_Already_Set(Title: Option_Title) return Boolean is
       begin
-	 if not Result(Title).Set then
+	 if not Result(Title).Is_Set then
 	    return False;
 	 end if;
 
@@ -348,7 +348,7 @@ package body Get_Option is
 		     end if;
 		  end if;
 
-		  Result(Title) := (Set => True, Value => Access_Value);
+		  Result(Title) := (Is_Set => True, Value => Access_Value);
 		  exit;
 	       end if;
 	    end loop;
@@ -392,7 +392,7 @@ package body Get_Option is
 			Access_Value := null;
 		     end if;
 
-		     Result(Title) := (Set => True, Value => Access_Value);
+		     Result(Title) := (Is_Set => True, Value => Access_Value);
 		     exit;
 		  end if;
 	       end loop;

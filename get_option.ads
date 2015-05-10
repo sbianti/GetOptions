@@ -34,7 +34,7 @@ package Get_Option is
    No_Short_Name   : constant Character := ' ';
 
    type Option_Result is record
-      Set: Boolean := False;
+      Is_Set: Boolean := False;
       Value: access String;
    end record;
 
