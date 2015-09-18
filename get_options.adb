@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
---  Get_Option								      --
+--  Get_Options								      --
 --  									      --
 --  Copyright © 2015 Sébastien Bianti					      --
 --  									      --
@@ -23,7 +23,7 @@ with Ada.Command_Line.Remove;
 with Ada.Characters.Handling;
 with Ada.Strings.Fixed;
 
-package body Get_Option is
+package body Get_Options is
    use Ada.Text_IO, Ada.Command_Line, Ada.Strings.Unbounded, Ada.Strings.Fixed;
 
    Already_Warned_For_Multiple_Set: array (Option_Title) of Boolean :=
@@ -125,7 +125,7 @@ package body Get_Option is
 			Multiset: in Option_Multisetable := (others => False))
 		       return Option_Result_Array is
    begin
-      Get_Option.Help_Sections := Help_Sections;
+      Standard.Get_Options.Help_Sections := Help_Sections;
       return Get_Options(Option, Help_Header, Help_Footer, Multiset);
    end Get_Options;
 
@@ -421,4 +421,4 @@ package body Get_Option is
       return Result;
    end Get_Options;
 
-end Get_Option;
+end Get_Options;

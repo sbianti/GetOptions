@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
---  Get_Option								      --
+--  Get_Options								      --
 --  									      --
 --  Copyright © 2015 Sébastien Bianti					      --
 --  									      --
@@ -24,7 +24,7 @@ with Ada.Command_Line;
 
 generic
    type Option_Title is (<>);
-package Get_Option is
+package Get_Options is
    use Ada.Characters, Ada.Strings.Unbounded, Ada;
 
 -- Simple dash (often use to mean reading from stdin):
@@ -103,4 +103,4 @@ package Get_Option is
    Bad_Grouped_Option_Error,
    End_Of_Program_With_Help_Menu,
    Redundant_Short_Option_Name_Error: exception;
-end Get_Option;
+end Get_Options;

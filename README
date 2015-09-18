@@ -1,3 +1,3 @@
-	*** Ada GetOption program ***
+	*** Ada GetOptions program ***
 
 This Ada package is intended to manage the command-line for programs.
