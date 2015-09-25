@@ -69,7 +69,7 @@ package body Get_Options is
 	    Number := Number + 1;
 	 end if;
       end loop;
-	
+
       return Number;
    end Get_Number_Values;
 
@@ -194,7 +194,7 @@ package body Get_Options is
 	       New_Line;
 	       Put_Line(To_Str(Help_Sections(Title)));
 	       New_Line;
-	    end if; 
+	    end if;
 
 	    if Option(Title).Short_Name = Null_Short_Name then
 	       Put("-" & ",  --");
