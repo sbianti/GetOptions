@@ -218,8 +218,10 @@ package body Get_Options is
 	    Put_Line(Short_Description(Option(Title)));
 	 end loop;
 
-	 New_Line;
-	 Put_Line(Help_Footer);
+	 if Help_Footer /= "" then
+	    New_Line;
+	    Put_Line(Help_Footer);
+	 end if;
       end Print_Help;
 
       function Make_Value(Title: in Option_Title;
