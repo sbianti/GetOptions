@@ -119,20 +119,21 @@ package body Get_Options is
       return Values;
    end Get_Values;
 
-   function Get_Options(Option: in Option_Setting_Array;
-			Help_Header, Help_Footer: in String;
-			Help_Sections: in Help_Section_Array;
-			Multiset: in Option_Multisetable := (others => False))
-		       return Option_Result_Array is
+   function Parse(Option: in Option_Setting_Array;
+		  Help_Header, Help_Footer: in String;
+		  Help_Sections: in Help_Section_Array;
+		  Multiset: in Option_Multisetable := (others => False))
+		 return Option_Result_Array is
    begin
-      Standard.Get_Options.Help_Sections := Help_Sections;
-      return Get_Options(Option, Help_Header, Help_Footer, Multiset);
-   end Get_Options;
+      Get_Options.Help_Sections := Help_Sections;
+      return Parse(Option, Help_Header, Help_Footer, Multiset);
+   end Parse;
 
-   function Get_Options(Option: in Option_Setting_Array;
-			Help_Header, Help_Footer: in String;
-			Multiset: in Option_Multisetable := (others => False))
-		       return Option_Result_Array is
+   function Parse(Option: in Option_Setting_Array;
+		  Help_Header, Help_Footer: in String;
+		  Multiset: in Option_Multisetable := (others => False))
+     
+		 return Option_Result_Array is
       Lg: Natural;
       Result: Option_Result_Array;
       Found: Boolean;
@@ -421,6 +422,6 @@ package body Get_Options is
       end loop;
 
       return Result;
-   end Get_Options;
+   end Parse;
 
 end Get_Options;

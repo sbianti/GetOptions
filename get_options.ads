@@ -58,16 +58,16 @@ package Get_Options is
 
    type Help_Section_Array is array (Option_Title) of Unbounded_String;
 
-   function Get_Options(Option: in Option_Setting_Array;
-			Help_Header, Help_Footer: in String;
-			Multiset: in Option_Multisetable := (others => False))
-		       return Option_Result_Array;
+   function Parse(Option: in Option_Setting_Array;
+		  Help_Header, Help_Footer: in String;
+		  Multiset: in Option_Multisetable := (others => False))
+		 return Option_Result_Array;
 
-   function Get_Options(Option: in Option_Setting_Array;
-			Help_Header, Help_Footer: in String;
-			Help_Sections: in Help_Section_Array;
-			Multiset: in Option_Multisetable := (others => False))
-		       return Option_Result_Array;
+   function Parse(Option: in Option_Setting_Array;
+		  Help_Header, Help_Footer: in String;
+		  Help_Sections: in Help_Section_Array;
+		  Multiset: in Option_Multisetable := (others => False))
+		 return Option_Result_Array;
 
    function Get_Number_Values(Result: in Option_Result) return Natural;
 
