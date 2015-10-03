@@ -74,6 +74,11 @@ package Get_Options is
    function Get_Value(Result: in Option_Result; Number: Natural) return String;
 
    function Get_Values(Result: in Option_Result) return US_Array_Type;
+   
+   function No_Short_Option(Short_Description: in String) return Option_Setting;
+
+   function No_Option_Value(Car: in Character;
+			    Short_Description: in String) return Option_Setting;
 
 -- Renamings from Ada.Strings.Unbounded:
    subtype Unbounded_String is Ada.Strings.Unbounded.Unbounded_String;

@@ -118,6 +118,19 @@ package body Get_Options is
 
       return Values;
    end Get_Values;
+   
+   function No_Short_Option(Short_Description: in String)
+			   return Option_Setting is
+   begin
+      return (No_Short_Name, No, Null_Unbounded_String,
+	      To_US(Short_Description));
+   end No_Short_Option;
+
+   function No_Option_Value(Car: in Character; Short_Description: in String)
+			   return Option_Setting is
+   begin
+      return (Car, No, Null_Unbounded_String, To_US(Short_Description));
+   end No_Option_Value;
 
    function Parse(Option: in Option_Setting_Array;
 		  Help_Header, Help_Footer: in String;
