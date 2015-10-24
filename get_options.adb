@@ -200,8 +200,10 @@ package body Get_Options is
 	 -- -j, --number-of-thread=???  Runs the number of thread specified.
 	 Max_Width: Ada.Text_Io.Count := Option_Title'Width + 12;
       begin
-	 Put_Line(Help_Header);
-	 New_Line;
+	 if Help_Header /= "" then
+	    Put_Line(Help_Header);
+	    New_Line;
+	 end if;
 
 	 for Title in Option_Title'Range loop
 	    if Help_Sections(Title) /= Null_Unbounded_String then
