@@ -24,7 +24,7 @@ with Ada.Characters.Handling;
 with Ada.Strings.Fixed;
 
 package body Get_Options is
-   use Ada.Text_IO, Ada.Command_Line, Ada.Strings.Unbounded, Ada.Strings.Fixed;
+   use Ada.Text_IO, Ada.Command_Line, Ada.Strings.Unbounded, Ada.Strings;
 
    Already_Warned_For_Multiple_Set: array (Option_Title) of Boolean :=
      (others => False);
@@ -230,8 +230,37 @@ package body Get_Options is
 	       when No => null;
 	    end case;
 
-	    Set_Col(Max_Width);
-	    Put_Line(Short_Description(Option(Title)));
+	    declare
+	       Description: String := Short_Description(Option(Title));
+
+	       Start: Positive;
+	       Last: Natural;
+
+	       EOL: constant String := Latin_1.LF & "";
+
+	       New_Line_Count: constant Natural :=
+		 Fixed.Count(Short_Description(Option(Title)), EOL);
+	    begin
+
+	       if New_Line_Count = 0 then
+		  Set_Col(Max_Width);
+		  Put_Line(Description);
+	       else
+		  Start := Description'First;
+
+		  for N in 1..New_Line_Count + 1 loop
+		     Set_Col(Max_Width);
+
+		     Last := Fixed.Index(Description, EOL, Start);
+		     if Last = 0 then
+			Last := Description'Last + 1; -- +1 for the following - 1
+		     end if;
+
+		     Put_Line(Description(Start..Last - 1));
+		     Start := Last + 1;
+		  end loop;
+	       end if;
+	    end;
 	 end loop;
 
 	 if Help_Footer /= "" then
@@ -325,7 +354,7 @@ package body Get_Options is
 	       Pl_Error("special void option «-» is not recognized");
 	    end if;
 	 elsif Argument(Num)(2) = '-' then
-	    Pos_Equal := Index(Argument(Num), "=", 3);
+	    Pos_Equal := Fixed.Index(Argument(Num), "=", 3);
 	    if Pos_Equal = 0 then
 	       Stop := Lg;
 	    else
