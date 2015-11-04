@@ -74,7 +74,7 @@ package body Get_Options is
    end Get_Number_Values;
 
    function Get_Value(Result: in Option_Result;
-		      Number: in Natural) return String is
+		      Number: in Positive) return String is
       use Ada.Characters.Latin_1;
       Start, Current: Natural;
       Value: String := Result.Value.all;

@@ -71,7 +71,7 @@ package Get_Options is
 
    function Get_Number_Values(Result: in Option_Result) return Natural;
 
-   function Get_Value(Result: in Option_Result; Number: Natural) return String;
+   function Get_Value(Result: in Option_Result; Number: Positive) return String;
 
    function Get_Values(Result: in Option_Result) return US_Array_Type;
    
