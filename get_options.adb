@@ -159,7 +159,9 @@ package body Get_Options is
 				      Count: in Natural;
 				      Value: out Unbounded_String) is
       begin
-	 if Argument_Count = Count or else Argument(Count + 1)(1) = '-' then
+	 if Argument_Count = Count or else
+	   (Argument(Count + 1)'Length /= 0 and then
+	      Argument(Count + 1)(1) = '-') then
 	    if Option(Title).Needs_Value = Yes then
 	       Pl_Error("Option " & Long_Name(Title) & " requires an argument");
 	       raise Parsing_Error;
@@ -331,11 +333,13 @@ package body Get_Options is
       end if;
 
       for Num in reverse 1..End_Of_The_Options loop
-	 if Argument(Num)(1) /= '-' then
+
+	 Lg := Argument(Num)'Length;
+
+	 if Lg = 0 or else Argument(Num)(1) /= '-' then
 	    goto Continue;
 	 end if;
 
-	 Lg := Argument(Num)'Length;
 	 Found := False;
 
 	 if Lg = 1 then
@@ -462,7 +466,7 @@ package body Get_Options is
       end if;
 
       for N in reverse 1..End_Of_The_Options loop
-	 if Argument(N)(1) = '-' then
+	 if Argument(N)'Length /= 0 and then Argument(N)(1) = '-' then
 	    Remove.Remove_Argument(N);
 	 end if;
       end loop;
