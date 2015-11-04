@@ -33,9 +33,11 @@ package Get_Options is
 -- Only a long name for this option:
    No_Short_Name   : constant Character := ' ';
 
+   type Access_String is access String;
+
    type Option_Result is record
       Is_Set: Boolean := False;
-      Value: access String;
+      Value: Access_String;
    end record;
 
    type Option_Result_Array is array (Option_Title) of Option_Result;

@@ -153,7 +153,7 @@ package body Get_Options is
       Result: Option_Result_Array;
       Found: Boolean;
       Value: Unbounded_String;
-      Access_Value: String_Access;
+      Access_Value: Access_String;
 
       procedure Check_Parameter_Value(Title: in Option_Title;
 				      Count: in Natural;
@@ -274,10 +274,16 @@ package body Get_Options is
       end Print_Help;
 
       function Make_Value(Title: in Option_Title;
-			  Value: in Unbounded_String) return String_Access is
-	 Access_Value: String_Access;
+			  Value: in Unbounded_String) return Access_String is
+	 Access_Value: Access_String;
       begin
-	 if Result(Title).Value /= null then
+	 if Value = Null_Unbounded_String then
+	    if Result(Title).Value = null then
+	       return null;
+	    else
+	       Access_Value := Result(Title).Value;
+	    end if;
+	 elsif Result(Title).Value /= null then
 	    Access_Value := new String(1..Length(Value) +
 					 Result(Title).Value.all'Length + 1);
 	    Access_Value.all := Result(Title).Value.all &
@@ -389,7 +395,8 @@ package body Get_Options is
 			   Remove.Remove_Argument(Num + 1);
 			   End_Of_The_Options := End_Of_The_Options - 1;
 			else
-			   Access_Value := null;
+			   Access_Value := Make_Value(Title,
+						      Null_Unbounded_String);
 			end if;
 		     end if;
 		  else
@@ -438,7 +445,8 @@ package body Get_Options is
 			      Remove.Remove_Argument(Num + 1);
 			      End_Of_The_Options := End_Of_The_Options - 1;
 			   else
-			      Access_Value := null;
+			      Access_Value := Make_Value(Title,
+							 Null_Unbounded_String);
 			   end if;
 			end if;
 		     else
