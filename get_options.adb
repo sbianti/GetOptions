@@ -56,16 +56,15 @@ package body Get_Options is
    function Get_Number_Values(Result: in Option_Result) return Natural is
       use Ada.Characters.Latin_1;
       Number: Natural;
-      Value: String := Result.Value.all;
    begin
-      if Value = "" then
+      if Result.Value = null or else Result.Value.all = "" then
 	 return 0;
       end if;
 
       Number := 1;
 
-      for I in Value'Range loop
-	 if Value(I) = Nul then
+      for I in Result.Value'Range loop
+	 if Result.Value(I) = Nul then
 	    Number := Number + 1;
 	 end if;
       end loop;
@@ -76,8 +75,8 @@ package body Get_Options is
    function Get_Value(Result: in Option_Result;
 		      Number: in Positive) return String is
       use Ada.Characters.Latin_1;
+
       Start, Current: Natural;
-      Value: String := Result.Value.all;
    begin
       if Number > Get_Number_Values(Result) then
 	 return "";
@@ -85,36 +84,39 @@ package body Get_Options is
 
       Start := 1;
       Current := 0;
-      for I in Value'Range loop
-	 if Value(I) = Nul then
+      for I in Result.Value'Range loop
+	 if Result.Value(I) = Nul then
 	    Current := Current + 1;
 
 	    if Current = Number then
-	       return Value(Start..I-1);
+	       return Result.Value(Start..I-1);
 	    end if;
 
 	    Start := I + 1;
 	 end if;
       end loop;
 
-      return Value(Start..Value'Last);
+      return Result.Value(Start..Result.Value'Last);
    end Get_Value;
 
    function Get_Values(Result: in Option_Result) return US_Array_Type is
       use Ada.Characters.Latin_1;
       Values: Us_Array_Type(1..Get_Number_Values(Result));
-      Value: String := Result.Value.all;
       Number, Start: Natural := 1;
    begin
-      for I in Value'Range loop
-	 if Value(I) = Nul then
-	    Values(Number) := To_US(Value(Start..I-1));
+      if Values'Length = 0 then
+	 return Values;
+      end if;
+
+      for I in Result.Value'Range loop
+	 if Result.Value(I) = Nul then
+	    Values(Number) := To_US(Result.Value(Start..I-1));
 	    Start := I + 1;
 	    Number := Number + 1;
 	 end if;
       end loop;
 
-      Values(Number) := To_US(Value(Start..Value'Last));
+      Values(Number) := To_US(Result.Value(Start..Result.Value'Last));
 
       return Values;
    end Get_Values;
