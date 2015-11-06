@@ -385,7 +385,7 @@ package body Get_Options is
 		  if Option(Title).Needs_Value /= No then
 		     if Pos_Equal /= 0 then
 			Access_Value :=
-			  new String'(Argument(Num)(Pos_Equal+1..Lg));
+			  Make_Value(Title, To_US(Argument(Num)(Pos_Equal+1..Lg)));
 		     else
 			Check_Parameter_Value(Title, Num, Value);
 
