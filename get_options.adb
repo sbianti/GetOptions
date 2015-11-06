@@ -298,21 +298,20 @@ package body Get_Options is
 
       procedure Check_Options_Validity is
 	 Shorts: String(1..Option'Length);
-	 I: Natural := 0;
+	 I: Natural := 1;
       begin
 	 for Title in Option'Range loop
 	    if Option(Title).Short_Name /= No_Short_Name then
-	       for J in 1..I loop
+	       Shorts(I) := Option(Title).Short_Name;
+	       for J in 1..I-1 loop
 		  if Shorts(J) = Option(Title).Short_Name then
-		     Pl_Error("short option name " &
-				Character'Image(Option(Title).Short_Name) &
+		     Pl_Error("short option name " & Option(Title).Short_Name &
 				" is present many times");
 		     raise Redundant_Short_Option_Name_Error;
 		  end if;
 	       end loop;
 
 	       I := I + 1;
-	       Shorts(I) := Option(Title).Short_Name;
 	    end if;
 	 end loop;
       end Check_Options_Validity;
