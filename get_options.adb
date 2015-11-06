@@ -82,7 +82,7 @@ package body Get_Options is
 	 return "";
       end if;
 
-      Start := 1;
+      Start := Result.Value'First;
       Current := 0;
       for I in Result.Value'Range loop
 	 if Result.Value(I) = Nul then
@@ -102,7 +102,8 @@ package body Get_Options is
    function Get_Values(Result: in Option_Result) return US_Array_Type is
       use Ada.Characters.Latin_1;
       Values: Us_Array_Type(1..Get_Number_Values(Result));
-      Number, Start: Natural := 1;
+      Number: Natural := 1;
+      Start: Natural := Result.Value'First;
    begin
       if Values'Length = 0 then
 	 return Values;
@@ -284,13 +285,10 @@ package body Get_Options is
 	       Access_Value := Result(Title).Value;
 	    end if;
 	 elsif Result(Title).Value /= null then
-	    Access_Value := new String(1..Value'Length +
-					 Result(Title).Value.all'Length + 1);
-	    Access_Value.all :=
-	      Result(Title).Value.all & Character'Val(0) & Value;
+	    Access_Value :=
+	      new String'(Result(Title).Value.all & Character'Val(0) & Value);
 	 else
-	    Access_Value := new String(1..Value'Length);
-	    Access_Value.all := Value;
+	    Access_Value := new String'(Value);
 	 end if;
 
 	 return Access_Value;
