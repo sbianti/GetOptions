@@ -274,23 +274,23 @@ package body Get_Options is
       end Print_Help;
 
       function Make_Value(Title: in Option_Title;
-			  Value: in Unbounded_String) return Access_String is
+			  Value: in String) return Access_String is
 	 Access_Value: Access_String;
       begin
-	 if Value = Null_Unbounded_String then
+	 if Value = "" then
 	    if Result(Title).Value = null then
 	       return null;
 	    else
 	       Access_Value := Result(Title).Value;
 	    end if;
 	 elsif Result(Title).Value /= null then
-	    Access_Value := new String(1..Length(Value) +
+	    Access_Value := new String(1..Value'Length +
 					 Result(Title).Value.all'Length + 1);
-	    Access_Value.all := Result(Title).Value.all &
-	      Character'Val(0) & To_String(Value);
+	    Access_Value.all :=
+	      Result(Title).Value.all & Character'Val(0) & Value;
 	 else
-	    Access_Value := new String(1..Length(Value));
-	    Access_Value.all := To_String(Value);
+	    Access_Value := new String(1..Value'Length);
+	    Access_Value.all := Value;
 	 end if;
 
 	 return Access_Value;
@@ -385,17 +385,16 @@ package body Get_Options is
 		  if Option(Title).Needs_Value /= No then
 		     if Pos_Equal /= 0 then
 			Access_Value :=
-			  Make_Value(Title, To_US(Argument(Num)(Pos_Equal+1..Lg)));
+			  Make_Value(Title, Argument(Num)(Pos_Equal+1..Lg));
 		     else
 			Check_Parameter_Value(Title, Num, Value);
 
 			if Value /= Null_Unbounded_String then
-			   Access_Value := Make_Value(Title, Value);
+			   Access_Value := Make_Value(Title, To_String(Value));
 			   Remove.Remove_Argument(Num + 1);
 			   End_Of_The_Options := End_Of_The_Options - 1;
 			else
-			   Access_Value := Make_Value(Title,
-						      Null_Unbounded_String);
+			   Access_Value := Make_Value(Title, "");
 			end if;
 		     end if;
 		  else
@@ -440,12 +439,12 @@ package body Get_Options is
 			   Check_Parameter_Value(Title, Num, Value);
 
 			   if Value /= Null_Unbounded_String then
-			      Access_Value := Make_Value(Title, Value);
+			      Access_Value := Make_Value(Title,
+							 To_String(Value));
 			      Remove.Remove_Argument(Num + 1);
 			      End_Of_The_Options := End_Of_The_Options - 1;
 			   else
-			      Access_Value := Make_Value(Title,
-							 Null_Unbounded_String);
+			      Access_Value := Make_Value(Title, "");
 			   end if;
 			end if;
 		     else
